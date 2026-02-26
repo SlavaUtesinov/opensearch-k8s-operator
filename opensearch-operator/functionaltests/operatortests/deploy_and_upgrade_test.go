@@ -28,17 +28,21 @@ var _ = Describe("DeployAndUpgrade", Ordered, func() {
 		It("should have 3 ready master pods", func() {
 			sts := appsv1.StatefulSet{}
 			Eventually(func() int32 {
-				descr, err := decriber.Describe(namespace, name+"-masters-0", describe.DescriberSettings{
-					ShowEvents: true,
-					ChunkSize:  0,
-				})
-				if err != nil {
-					GinkgoWriter.Printf("describe err:\n%s\n", err.Error())
-					return 0
-				}
-				GinkgoWriter.Printf("describe res:\n%s\n", descr)
+				/*
+					descr, err := decriber.Describe(namespace, name+"-masters-0", describe.DescriberSettings{
+						ShowEvents: true,
+						ChunkSize:  0,
+					})
+					if err != nil {
+						GinkgoWriter.Printf("describe err:\n%s\n", err.Error())
+						return 0
+					}
+					GinkgoWriter.Printf("describe res:\n%s\n", descr)
+				*/
 
-				resp, err := k8sClientSet.CoreV1().Pods(namespace).GetLogs("opensearch", &corev1.PodLogOptions{}).Stream(context.Background())
+				resp, err := k8sClientSet.CoreV1().Pods(namespace).GetLogs(name+"-masters-0", &corev1.PodLogOptions{
+					Container: "opensearch",
+				}).Stream(context.Background())
 				if err != nil {
 					GinkgoWriter.Printf("logs err:\n%s\n", err.Error())
 					return 0
