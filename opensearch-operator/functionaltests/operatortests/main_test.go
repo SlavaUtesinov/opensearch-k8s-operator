@@ -6,7 +6,7 @@ import (
 	opsterv1 "github.com/Opster/opensearch-k8s-operator/opensearch-operator/api/v1"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
@@ -45,7 +45,7 @@ func TestAPIs(t *testing.T) {
 	}
 
 	var ok bool
-	decriber, ok = describe.DescriberFor(schema.GroupKind{Group: appsv1.GroupName, Kind: "StatefulSet"}, config)
+	decriber, ok = describe.DescriberFor(schema.GroupKind{Group: corev1.GroupName, Kind: "Pod"}, config)
 	if !ok {
 		panic("can't create describer")
 	}
