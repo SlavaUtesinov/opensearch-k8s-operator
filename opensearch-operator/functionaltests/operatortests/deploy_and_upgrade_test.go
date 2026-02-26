@@ -11,6 +11,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/kubectl/pkg/describe"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -26,7 +27,17 @@ var _ = Describe("DeployAndUpgrade", Ordered, func() {
 		It("should have 3 ready master pods", func() {
 			sts := appsv1.StatefulSet{}
 			Eventually(func() int32 {
-				err := k8sClient.Get(context.Background(), client.ObjectKey{Name: name + "-masters", Namespace: namespace}, &sts)
+				descr, err := decriber.Describe(namespace, name+"-masters", describe.DescriberSettings{
+					ShowEvents: true,
+					ChunkSize:  0,
+				})
+				if err != nil {
+					GinkgoWriter.Printf("describe err: %s\n", err.Error())
+					return 0
+				}
+				GinkgoWriter.Printf("describe res: %s\n", descr)
+
+				err = k8sClient.Get(context.Background(), client.ObjectKey{Name: name + "-masters", Namespace: namespace}, &sts)
 				if err == nil {
 					return sts.Status.ReadyReplicas
 				}
