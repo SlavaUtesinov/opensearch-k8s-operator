@@ -1,6 +1,7 @@
 package operatortests
 
 import (
+	"bufio"
 	"context"
 	"time"
 
@@ -36,6 +37,19 @@ var _ = Describe("DeployAndUpgrade", Ordered, func() {
 					return 0
 				}
 				GinkgoWriter.Printf("describe res:\n%s\n", descr)
+
+				resp, err := k8sClientSet.CoreV1().Pods(namespace).GetLogs("opensearch", &corev1.PodLogOptions{}).Stream(context.Background())
+				if err != nil {
+					GinkgoWriter.Printf("logs err:\n%s\n", err.Error())
+					return 0
+				}
+				defer resp.Close()
+				scanner := bufio.NewScanner(resp)
+				var text string
+				for scanner.Scan() {
+					text = text + "\n" + scanner.Text()
+				}
+				GinkgoWriter.Printf("logs:\n%s\n", text)
 
 				err = k8sClient.Get(context.Background(), client.ObjectKey{Name: name + "-masters", Namespace: namespace}, &sts)
 				if err == nil {
