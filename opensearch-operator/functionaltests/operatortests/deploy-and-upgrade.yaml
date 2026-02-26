@@ -5,7 +5,7 @@ metadata:
   namespace: default
 spec:
   general:
-    version: 2.17.0
+    version: 2.18.0
     httpPort: 9200
     vendor: opensearch
     serviceName: deploy-and-upgrade
@@ -16,7 +16,7 @@ spec:
   confMgmt:
     smartScaler: true
   dashboards:
-    version: 2.17.0
+    version: 2.18.0
     enable: true
     replicas: 1
     resources:
