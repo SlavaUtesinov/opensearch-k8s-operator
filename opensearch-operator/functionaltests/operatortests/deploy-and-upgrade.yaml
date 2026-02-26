@@ -26,6 +26,14 @@ spec:
       limits:
          memory: "1Gi"
          cpu: "500m"
+  security:
+    config:
+      adminCredentialsSecret:
+        name: ""
+      adminSecret:
+        name: ""
+      securityConfigSecret:
+        name: ""
   nodePools:
     - component: masters
       replicas: 3
