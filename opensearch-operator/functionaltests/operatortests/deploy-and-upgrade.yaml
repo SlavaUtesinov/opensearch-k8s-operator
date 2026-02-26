@@ -39,5 +39,5 @@ spec:
             memory: "2Gi"
             cpu: "500m"
       roles:
-        - "master"
+        - "cluster_manager"
         - "data"

@@ -2,7 +2,6 @@ package operatortests
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	opsterv1 "github.com/Opster/opensearch-k8s-operator/opensearch-operator/api/v1"
@@ -33,10 +32,10 @@ var _ = Describe("DeployAndUpgrade", Ordered, func() {
 					ChunkSize:  0,
 				})
 				if err != nil {
-					fmt.Printf("describe err:\n%s\n", err.Error())
+					GinkgoWriter.Printf("describe err:\n%s\n", err.Error())
 					return 0
 				}
-				fmt.Printf("describe res:\n%s\n", descr)
+				GinkgoWriter.Printf("describe res:\n%s\n", descr)
 
 				err = k8sClient.Get(context.Background(), client.ObjectKey{Name: name + "-masters", Namespace: namespace}, &sts)
 				if err == nil {

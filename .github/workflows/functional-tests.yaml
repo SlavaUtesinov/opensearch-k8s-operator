@@ -42,7 +42,7 @@ jobs:
           cd functionaltests
 
           ## Run tests
-          go test ./operatortests -timeout 30m
+          go test -v ./operatortests -timeout 30m -args -ginkgo.v
 
   cluster-helm-chart:
     runs-on: ubuntu-latest
