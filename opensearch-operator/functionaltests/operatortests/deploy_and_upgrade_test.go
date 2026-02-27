@@ -26,39 +26,30 @@ var _ = Describe("DeployAndUpgrade", Ordered, func() {
 		It("should have 3 ready master pods", func() {
 			sts := appsv1.StatefulSet{}
 			Eventually(func() int32 {
-				/*
-					descr, err := decriber.Describe(namespace, name+"-masters-0", describe.DescriberSettings{
-						ShowEvents: true,
-						ChunkSize:  0,
-					})
-					if err != nil {
-						GinkgoWriter.Printf("describe err:\n%s\n", err.Error())
-						return 0
-					}
-					GinkgoWriter.Printf("describe res:\n%s\n", descr)
-				*/
-
-				/*
-					resp, err := k8sClientSet.CoreV1().Pods(namespace).GetLogs(name+"-masters-0", &corev1.PodLogOptions{
-						Container: "opensearch",
-					}).Stream(context.Background())
-					if err != nil {
-						GinkgoWriter.Printf("logs err:\n%s\n", err.Error())
-						return 0
-					}
-					defer resp.Close()
-					scanner := bufio.NewScanner(resp)
-					var text string
-					for scanner.Scan() {
-						text = text + "\n" + scanner.Text()
-					}
-					GinkgoWriter.Printf("logs:\n%s\n", text)
-				*/
-
 				err := k8sClient.Get(context.Background(), client.ObjectKey{Name: name + "-masters", Namespace: namespace}, &sts)
 				if err == nil {
+					GinkgoWriter.Printf("%+v\n", sts.Status)
+					pods := &corev1.PodList{}
+					err := k8sClient.List(context.Background(), pods, client.InNamespace(namespace))
+					if err == nil {
+						for _, pod := range pods.Items {
+							revision, ok := pod.Labels["controller-revision-hash"]
+							GinkgoWriter.Printf("Pod: %s\tPhase: %s", pod.Name, pod.Status.Phase)
+							if ok {
+								GinkgoWriter.Printf("\tRevision: %s\t Image: %s", revision, pod.Spec.Containers[0].Image)
+							}
+							GinkgoWriter.Println()
+						}
+					} else {
+						GinkgoWriter.Println(err)
+					}
+					cluster := &opsterv1.OpenSearchCluster{}
+					k8sClient.Get(context.Background(), client.ObjectKey{Name: name, Namespace: namespace}, cluster)
+					GinkgoWriter.Printf("Cluster: %+v\n", cluster.Status)
+
 					return sts.Status.ReadyReplicas
 				}
+				GinkgoWriter.Println(err)
 				return 0
 			}, time.Minute*15, time.Second*5).Should(Equal(int32(3)))
 		})
