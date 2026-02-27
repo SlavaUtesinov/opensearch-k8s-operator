@@ -5,7 +5,7 @@ metadata:
   namespace: default
 spec:
   general:
-    version: 2.18.0
+    version: 2.17.0
     httpPort: 9200
     vendor: opensearch
     serviceName: deploy-and-upgrade
@@ -16,8 +16,8 @@ spec:
   confMgmt:
     smartScaler: true
   dashboards:
-    version: 2.18.0
-    enable: true
+    version: 2.17.0
+    enable: false
     replicas: 1
     resources:
       requests:
@@ -27,24 +27,22 @@ spec:
          memory: "1Gi"
          cpu: "500m"
   security:
-    config:
-      adminCredentialsSecret:
-        name: ""
-      adminSecret:
-        name: ""
-      securityConfigSecret:
-        name: ""
+    tls:
+      transport:
+        generate: true
+      http:
+        generate: true
   nodePools:
     - component: masters
       replicas: 3
-      diskSize: "5Gi"
-      NodeSelector:
+      diskSize: "1Gi"
+      #NodeSelector:
       resources:
          requests:
             memory: "1Gi"
             cpu: "500m"
          limits:
-            memory: "2Gi"
+            memory: "1Gi"
             cpu: "500m"
       roles:
         - "cluster_manager"
