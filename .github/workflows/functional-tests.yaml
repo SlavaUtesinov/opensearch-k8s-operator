@@ -88,4 +88,4 @@ jobs:
           cd functionaltests
 
           ## Run tests
-          go test ./helmtests -timeout 15m
+          go test -v ./helmtests -timeout 15m -args -ginkgo.v
