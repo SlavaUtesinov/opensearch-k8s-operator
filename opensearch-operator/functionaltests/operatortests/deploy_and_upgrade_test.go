@@ -83,9 +83,15 @@ var _ = Describe("DeployAndUpgrade", Ordered, func() {
 			Eventually(func() string {
 				err := k8sClient.Get(context.Background(), client.ObjectKey{Name: name + "-masters", Namespace: namespace}, &sts)
 				if err == nil {
-					image := sts.Spec.Template.Spec.Containers[0].Image
-					GinkgoWriter.Printf("image: %s\n", image)
-					return image
+					for _, container := range sts.Spec.Template.Spec.Containers {
+						if container.Name == "opensearch" {
+							GinkgoWriter.Printf("image: %s\n", container.Image)
+							return container.Image
+						}
+					}
+
+					GinkgoWriter.Printf("container not found\n")
+					return ""
 				}
 				GinkgoWriter.Printf("err: %s\n", err.Error())
 				return ""
