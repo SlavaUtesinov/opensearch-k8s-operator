@@ -39,8 +39,11 @@ var _ = Describe("DeployWithHelm", Ordered, func() {
 						GinkgoWriter.Println(err)
 					}
 					cluster := &opsterv1.OpenSearchCluster{}
-					k8sClient.Get(context.Background(), client.ObjectKey{Name: name, Namespace: namespace}, cluster)
-					GinkgoWriter.Printf("Cluster: %+v\n", cluster.Status)
+					if err := k8sClient.Get(context.Background(), client.ObjectKey{Name: name, Namespace: namespace}, cluster); err != nil {
+						GinkgoWriter.Printf("err: %s\n", err.Error())
+					} else {
+						GinkgoWriter.Printf("Cluster: %+v\n", cluster.Status)
+					}
 
 					return sts.Status.ReadyReplicas
 				}

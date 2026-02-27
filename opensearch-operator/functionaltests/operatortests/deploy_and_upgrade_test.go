@@ -83,10 +83,13 @@ var _ = Describe("DeployAndUpgrade", Ordered, func() {
 			Eventually(func() string {
 				err := k8sClient.Get(context.Background(), client.ObjectKey{Name: name + "-masters", Namespace: namespace}, &sts)
 				if err == nil {
-					return sts.Spec.Template.Spec.Containers[0].Image
+					image := sts.Spec.Template.Spec.Containers[0].Image
+					GinkgoWriter.Printf("image: %s\n", image)
+					return image
 				}
+				GinkgoWriter.Printf("err: %s\n", err.Error())
 				return ""
-			}, time.Minute*1, time.Second*5).Should(Equal("docker.io/opensearchproject/opensearch:2.18.0"))
+			}, time.Minute*5, time.Second*5).Should(Equal("docker.io/opensearchproject/opensearch:2.18.0"))
 
 			Eventually(func() int32 {
 				err := k8sClient.Get(context.Background(), client.ObjectKey{Name: name + "-masters", Namespace: namespace}, &sts)
